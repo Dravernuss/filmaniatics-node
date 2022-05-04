@@ -2,9 +2,9 @@ import express from "express";
 import mongoose from "mongoose";
 import cors from "cors";
 import dotenv from "dotenv";
-
 import path from "path";
 import { fileURLToPath } from "url";
+import { userRouter } from "./api/routes/index.js";
 
 // config environments
 const __filename = fileURLToPath(import.meta.url);
@@ -38,6 +38,8 @@ app.use(express.json());
 app.get("/", (request, response) => {
   response.send("BACKEND FILMANIATICS");
 });
+
+app.use("/api", userRouter);
 
 const PORT = process.env.PORT || 5000;
 
