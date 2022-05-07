@@ -3,7 +3,7 @@ import mongoose from "mongoose";
 // schema Comment
 const schemaComments = {
   user_id: String,
-  movie_id: String,
+  movie_id: Number,
   comment: String,
   created_at: { type: Date, default: Date.now() },
 };

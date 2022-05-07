@@ -8,6 +8,7 @@ const schemaUsers = {
   photo_url: { type: String, default: "" },
   description: { type: String, default: "" },
   fav_genre: { type: String, default: "" },
+  total_comments: { type: Number, default: 0 },
   created_at: { type: Date, default: Date.now() },
 };
 

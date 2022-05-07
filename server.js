@@ -4,7 +4,11 @@ import cors from "cors";
 import dotenv from "dotenv";
 import path from "path";
 import { fileURLToPath } from "url";
-import { userRouter, movielistRouter } from "./api/routes/index.js";
+import {
+  userRouter,
+  movielistRouter,
+  commentRouter,
+} from "./api/routes/index.js";
 
 // config environments
 const __filename = fileURLToPath(import.meta.url);
@@ -41,6 +45,7 @@ app.get("/", (request, response) => {
 
 app.use("/api", userRouter);
 app.use("/api", movielistRouter);
+app.use("/api", commentRouter);
 
 const PORT = process.env.PORT || 5000;
 

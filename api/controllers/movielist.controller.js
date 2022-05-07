@@ -1,6 +1,4 @@
 import { MovieList } from "../models/index.js";
-import jwt from "jsonwebtoken";
-import bcrypt from "bcrypt";
 
 // Controller get all MovieList
 export const getAllMovieList = async (request, response) => {
@@ -39,8 +37,40 @@ export const addMovieToMovieList = async (req, res) => {
   try {
     const listFound = await MovieList.findById(idMovieList);
     if (listFound) {
-      listFound.total_movies = listFound.total_movies + 1;
-      listFound.movies_watched.push(movieIdtoAdd);
+      if (
+        listFound.movies_watched.map((i) => {
+          if (movieIdtoAdd.movie_id === i) throw new Error();
+        })
+      )
+        listFound.movies_watched.push(movieIdtoAdd.movie_id);
+      listFound.total_movies = listFound.movies_watched.length;
+      MovieList.updateOne(
+        { _id: listFound._id },
+        listFound,
+        (error, updatedMovieList) => {
+          if (!error) {
+            res.status(200).json(updatedMovieList);
+          } else res.status(500).send(error);
+        }
+      );
+    }
+  } catch (error) {
+    res.status(500).send({ message: "movie_id already in list" });
+  }
+};
+
+// Controller remove movie to movielist (id movie_watched)
+export const removeMovieToMovieList = async (req, res) => {
+  const { idList: idMovieList, idMovie: idMovie } = req.params;
+  try {
+    const listFound = await MovieList.findById(idMovieList);
+    if (listFound) {
+      listFound.movies_watched.map((i, index) => {
+        if (i === Number(idMovie)) {
+          listFound.movies_watched.splice(index, 1);
+        }
+      });
+      listFound.total_movies = listFound.movies_watched.length;
       MovieList.updateOne(
         { _id: listFound._id },
         listFound,
@@ -56,28 +86,43 @@ export const addMovieToMovieList = async (req, res) => {
   }
 };
 
-// Controller remove movie to movielist (id movie_watched)
-export const removeMovieToMovieList = async (req, res) => {
-  const { idList: idMovieList, idMovie: idMovie } = req.params;
-  try {
-    const listFound = await MovieList.findById(idMovieList);
-
-    await listFound.updateOne(
-      { _id: idMovieList },
-      { $pull: { movies_watched: { movie_id: idMovie } } }
-    );
-  } catch (error) {
-    res.status(500).send(error);
-  }
-};
-
+// Controller add fav_movie to movielist
 export const addFavoriteMovieToMovieList = async (req, res) => {
   const { id: idMovieList } = req.params;
   const favoriteMovieIdtoAdd = req.body;
   try {
     const listFound = await MovieList.findById(idMovieList);
     if (listFound) {
-      listFound.fav_movies.push(favoriteMovieIdtoAdd);
+      if (
+        listFound.fav_movies.map((i) => {
+          if (favoriteMovieIdtoAdd.fav_id === i) throw new Error();
+        })
+      )
+        listFound.fav_movies.push(favoriteMovieIdtoAdd.fav_id);
+      MovieList.updateOne(
+        { _id: listFound._id },
+        listFound,
+        (error, updatedMovieList) => {
+          if (!error) {
+            res.status(200).json(updatedMovieList);
+          } else res.status(500).send(error);
+        }
+      );
+    }
+  } catch (error) {
+    res.status(500).send({ message: "fav_id already in list" });
+  }
+};
+
+// Controller remove fav_movie to movielist (id movie_watched)
+export const removeFavoriteMovieToMovieList = async (req, res) => {
+  const { idList: idMovieList, idMovie: idFavMovie } = req.params;
+  try {
+    const listFound = await MovieList.findById(idMovieList);
+    if (listFound) {
+      listFound.fav_movies.map((i, index) => {
+        if (i === Number(idFavMovie)) listFound.fav_movies.splice(index, 1);
+      });
       MovieList.updateOne(
         { _id: listFound._id },
         listFound,
