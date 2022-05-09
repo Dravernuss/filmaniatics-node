@@ -1,4 +1,4 @@
-import { Comment } from "../models/index.js";
+import { Comment, User } from "../models/index.js";
 
 // Controller get All Comments
 export const getAllComments = async (req, res) => {
@@ -48,11 +48,17 @@ export const getOneComment = async (req, res) => {
 export const createComment = async (req, res) => {
   try {
     const { idUser: user_id, idMovie: movie_id } = req.params;
+    const user = await User.findById(user_id);
+    user.total_comments++;
+    await User.updateOne(
+      { _id: user_id },
+      { total_comments: Number(user.total_comments++) }
+    );
     const comment = new Comment({ ...req.body, user_id, movie_id });
     const newComment = await comment.save();
     newComment && res.status(201).json(newComment);
   } catch (error) {
-    response.status(500).json({ error });
+    res.status(500).json({ error });
   }
 };
 
@@ -64,6 +70,12 @@ export const deleteComment = async (req, res) => {
     if (!commentToDelete) {
       res.status(204).send({ err: "No comment to delete" });
     } else {
+      const user = await User.findById(commentToDelete.user_id);
+      user.total_comments--;
+      await User.updateOne(
+        { _id: commentToDelete.user_id },
+        { total_comments: Number(user.total_comments--) }
+      );
       const deletedComment = await Comment.deleteOne(commentToDelete);
       if (deletedComment) res.status(200).json(deletedComment);
     }
