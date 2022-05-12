@@ -11,10 +11,10 @@ export const getAllMovieList = async (request, response) => {
   }
 };
 
-// Controller get one MovieList by id
+// Controller get one MovieList by user_id
 export const getOneMovieList = async (req, res) => {
-  const { id: idMovieList } = req.params;
-  const movieList = await MovieList.findById(idMovieList);
+  const { id: user_id } = req.params;
+  const movieList = await MovieList.findOne({ user_id: user_id });
   res.json(movieList);
 };
 
