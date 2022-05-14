@@ -54,7 +54,13 @@ export const createComment = async (req, res) => {
       { _id: user_id },
       { total_comments: Number(user.total_comments++) }
     );
-    const comment = new Comment({ ...req.body, user_id, movie_id });
+    const comment = new Comment({
+      ...req.body,
+      user_id,
+      movie_id,
+      commenter_name: user.name,
+      commenter_img: user.photo_url,
+    });
     const newComment = await comment.save();
     newComment && res.status(201).json(newComment);
   } catch (error) {

@@ -5,6 +5,8 @@ const schemaComments = {
   user_id: String,
   movie_id: Number,
   comment: String,
+  commenter_name: String,
+  commenter_img: String,
   created_at: { type: Date, default: Date.now() },
 };
 
